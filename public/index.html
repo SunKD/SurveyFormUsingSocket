@@ -1,0 +1,102 @@
+<html>
+
+<head>
+    <title>Sockets</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var socket = io(); //1
+
+            socket.on('greeting', function (data) { //4
+                console.log(data.msg); //5
+                socket.emit('thankyou', { msg: 'Thank you for connecting me! -Client' }); //6
+            });
+
+            socket.on('broad', function(data){
+                $('#messages').append(data + "<br>");
+            })
+
+            socket.on('luckyNum', function(data){
+                console.log(data.lucky);
+                $('#messages').append("<br>" + data.lucky + "<br>");
+            })
+
+            $('form').submit(function(e){
+                e.preventDefault();
+                var name= $('#name').val();
+                var location = $('#location').val();
+                var favLan = $('#favLan').val();
+                var comment = $('#comment').val();
+
+                var summary = `You emmited the following information to the server: {name: ${name}, location: ${location}, favorite language: ${favLan}, comment: ${comment}}`;
+                socket.emit('messages', summary);
+            });
+        });
+    </script>
+    <style>
+        .custom {
+            width: 100%;
+            margin-top: 40px;
+        }
+
+
+        #messages{
+            background-color: #b6d7a8;
+            border: 1px solid #17a2b8;
+            margin-bottom: 20px;
+        }
+
+        form {
+            border: 2px solid #17a2b8;
+            padding: 50px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div id="messages"></div>
+        <form id="form">
+            <div class="form-group row">
+                <label class="col-sm-5">Your Name:</label>
+                <input type="text" name="name" id="name" class="form-control col-sm-7" required>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-5">Dojo Location:</label>
+                <select name="location" id="location" class="custom-select col-sm-7">
+                    <option>San Jose</option>
+                    <option>Washington DC</option>
+                    <option>Seattle</option>
+                    <option>Dallas</option>
+                    <option>Denver</option>
+                </select>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-5">Favorite Language</label>
+                <select name="favLan" id="favLan" class="custom-select col-sm-7">
+                    <option>Python</option>
+                    <option>JavaScript</option>
+                    <option>C#/.Net</option>
+                    <option>Java</option>
+                    <option>C++</option>
+                    <option>Ruby</option>
+                </select>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-5">Comment (Optional):</label>
+                <textarea name="comment" id="comment" class="form-control col-sm-7"></textarea>
+                <br>
+            </div>
+            <div class="col-sm-12 text-center">
+                <input type="submit" value="Submit" class="btn btn-info custom">
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
